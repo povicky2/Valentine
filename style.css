@@ -183,3 +183,58 @@ button{
     animation:floatUp 2s linear forwards;
     pointer-events:none;
 }
+@media (max-width: 480px){
+
+  .setup-screen,
+  .app{
+    padding:20px 16px;
+    border-radius:18px;
+  }
+
+  .character{
+    font-size:140px;
+  }
+
+  h1{
+    font-size:22px;
+    line-height:1.3;
+  }
+
+  button{
+    padding:16px 22px;
+    font-size:17px;
+  }
+
+  .buttons{
+    gap:14px;
+    flex-wrap:wrap;
+  }
+}
+body.dark{
+  background:#0f0f13;
+  color:#fff;
+}
+
+body.dark .setup-screen,
+body.dark .app{
+  background:rgba(20,20,25,0.9);
+}
+
+body.dark h1{
+  color:#ff6b81;
+}
+
+
+body.dark{
+  background:#0f0f13;
+  color:#fff;
+}
+
+body.dark .setup-screen,
+body.dark .app{
+  background:rgba(20,20,25,0.9);
+}
+
+body.dark h1{
+  color:#ff6b81;
+}

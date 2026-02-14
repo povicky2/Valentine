@@ -33,27 +33,54 @@ let yesScale = 1;
 let noScale = 1;
 let noCount = 0;
 
+
+yourName = "Someone";
+
+
+const themeToggle = document.getElementById("themeToggle");
+
+themeToggle.onclick = ()=>{
+  document.body.classList.toggle("dark");
+};
+
+
+const soundToggle = document.getElementById("soundToggle");
+
+let soundOn = true;
+
+soundToggle.addEventListener("click", ()=>{
+  soundOn = !soundOn;
+
+  if(soundOn){
+    soundToggle.textContent = "🔊";
+    sound.volume = 0.6;
+  }else{
+    soundToggle.textContent = "🔇";
+    sound.volume = 0;
+  }
+});
+
 // ===== MOOD ENGINE =====
 const moods = {
   cute: {
-    emoji: "🥺",
+    emoji: "😏",
     yesText: "Yayyy 😍💖",
     final: "You're my Valentine 💘",
   },
   romantic: {
-    emoji: "❤️",
-    yesText: "My love 😍💖",
+    emoji: "😍",
+    yesText: "My love 😘💖",
     final: "Forever my Valentine 💍💘",
   },
   funny: {
     emoji: "😂",
     yesText: "E choke 😂💖",
-    final: "Valentine confirmed 😂💘",
+    final: "Valentine confirmed 🤣💘",
   },
   dramatic: {
     emoji: "😭",
-    yesText: "At last 😭💖",
-    final: "Destiny Valentine 😭💘",
+    yesText: "At last 🕺💃🕺💖",
+    final: "My Destinied Valentine 😂💘",
   }
 };
 
@@ -66,6 +93,13 @@ const noTexts = [
   "Stop this 😭",
   "Just say yes 😭💘",
   "You can't escape 😈💓",
+   "Don't do this 😭", 
+    "You're breaking my heart 💔",
+    "Try again 🥺",
+    "You joking right? 😭",
+    "Be Serious 😭",
+    "Stop this 😭",
+    "You're killing me 😭",
 ];
 
 // ===== UTILITIES =====
@@ -82,7 +116,7 @@ function createHeart(x,y){
 function rainHearts(){
   const h = document.createElement("div");
   h.className = "heart";
-  h.innerText = "💘";
+  h.innerText = "💖💓💗";
   h.style.left = Math.random()*window.innerWidth + "px";
   h.style.top = window.innerHeight + "px";
   heartLayer.appendChild(h);
@@ -126,17 +160,16 @@ startBtn.addEventListener("click", ()=>{
 function initApp(data){
   setupScreen.classList.add("hidden");
   appScreen.classList.remove("hidden");
-  if(sound){
-  sound.currentTime = 0;
-  sound.volume = 0.6;
-  sound.play().catch(()=>{});
-}
+  
 
 
   const moodData = moods[data.mood];
 
   character.innerText = moodData.emoji;
-  question.innerHTML = `Will you be my Valentine, <span>${data.crushName}</span>? 🌹`;
+ question.innerHTML =
+`<strong>${data.yourName}</strong> is Asking🥺:<br>
+Will you be my Valentine, <span>${data.crushName}</span>? 😍🌹`;
+
 }
 
 // ===== BUTTON LOGIC =====
@@ -165,7 +198,7 @@ noBtn.addEventListener("click", ()=>{
 
 
 yesBtn.addEventListener("click", ()=>{
-  //if(sound){ sound.currentTime = 0; sound.play().catch(()=>{}); }
+  if(sound){ sound.currentTime = 0; sound.play().catch(()=>{}); }
 
   buttons.innerHTML = "";
 
@@ -199,7 +232,33 @@ shareBtn.addEventListener("click", async ()=>{
   }else{
     window.open(`https://wa.me/?text=${encodeURIComponent(data.text + "\n" + data.url)}`);
   }
+
+  
+
+const themeToggle = document.getElementById("themeToggle");
+
+themeToggle.onclick = ()=>{
+  document.body.classList.toggle("dark");
+};
+
+
 });
+
+function typeText(el, text, speed=35){
+  el.textContent = "";
+  let i=0;
+
+  const t = setInterval(()=>{
+    el.textContent += text[i];
+    i++;
+    if(i >= text.length) clearInterval(t);
+  },speed);
+}
+typeText(
+  question,
+  `${data.yourName} asks: Will you be my Valentine, ${data.crushName}? 🌹`
+);
+
 
 copyLinkBtn.addEventListener("click", async ()=>{
   try{

@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Be My Valentine 💘</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
     <!-- SEO -->
     <meta name="description" content="Send a beautiful interactive Valentine request to your crush 💖">
@@ -19,6 +20,7 @@
 
 <!-- Audio -->
 <audio id="valSound" src="valentine.mp3" preload="auto"></audio>
+<button id="themeToggle" class="icon-btn">🌙</button>
 
 <!-- Background -->
 <div class="bg-overlay"></div>
@@ -30,19 +32,25 @@
 
     <input type="text" id="yourName" placeholder="Your name">
     <input type="text" id="crushName" placeholder="Crush name">
+   
+
 
     <select id="moodSelect">
-        <option value="cute">Cute 🥺</option>
-        <option value="romantic">Romantic 💖</option>
+        <option value="cute">Cute 😊</option>
+        <option value="romantic">Romantic 😍</option>
         <option value="funny">Funny 😂</option>
         <option value="dramatic">Dramatic 😭</option>
     </select>
+    <button id="themeToggle" class="icon-btn">🌙</button>
 
-    <button id="startBtn">Create Valentine 💌</button>
+    <button id="startBtn">Create Valentine 💌</button> 
+   
 </section>
 
 <!-- App Screen -->
 <section class="app hidden" id="appScreen">
+
+    <button id="soundToggle" class="icon-btn">🔊</button>
 
     <div class="character" id="character">🥺</div>
 
@@ -60,6 +68,10 @@
         <div class="share-actions">
             <button id="shareBtn">💌 Share</button>
             <button id="copyLinkBtn">📋 Copy Link</button>
+             <label>
+  <input type="checkbox" id="anonymous">
+  Send anonymously
+</label>
         </div>
         <p id="linkStatus"></p>
     </div>
