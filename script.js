@@ -128,6 +128,11 @@ function buildURL(data){
   const params = new URLSearchParams(data).toString();
   return `${window.location.origin}/?${params}`;
 }
+function buildShareURL(data){
+  const params = new URLSearchParams(data).toString();
+  return `https://be-my-valentine-app891.vercel.app/?${params}`;
+}
+
 
 
 function readURL(){
@@ -214,7 +219,7 @@ yesBtn.addEventListener("click", ()=>{
   setTimeout(()=>clearInterval(rain), 12000);
 
   // Share
-  const shareURL = window.location.href;
+ const shareURL = buildShareURL(readURL());
   shareLinkInput.value = shareURL;
   shareBox.classList.remove("hidden");
 });
