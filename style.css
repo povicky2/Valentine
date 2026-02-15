@@ -183,7 +183,7 @@ button{
 
 .heart{
     position:absolute;
-    animation:floatUp 2s linear forwards;
+    animation:floatUp 1s linear forwards;
     pointer-events:none;
 }
 @media (max-width: 480px){
@@ -215,30 +215,30 @@ button{
   }
 }
 body.dark{
-  background:#0f0f13;
+  background:#5d8df3;
   color:#fff;
 }
 
 body.dark .setup-screen,
 body.dark .app{
-  background:rgba(20,20,25,0.9);
+  background:rgba(19, 19, 148, 0.9);
 }
 
 body.dark h1{
-  color:#ff6b81;
+  color:#d60d2b;
 }
 
 
 body.dark{
-  background:#0f0f13;
-  color:#fff;
+  background:#090916;
+  color:#686064;
 }
 
 body.dark .setup-screen,
 body.dark .app{
-  background:rgba(20,20,25,0.9);
+  background:rgba(245, 57, 198, 0.9);
 }
 
 body.dark h1{
-  color:#ff6b81;
+  color:#f8f0f7;
 }

@@ -1,16 +1,25 @@
-// ===== GLOBAL ELEMENTS =====
-document.addEventListener("DOMContentLoaded", () => {
-
 console.log("JS Loaded");
+
+// ===== SUPABASE SETUP =====
+const SUPABASE_URL = "https://knxsgxcwgvrglabgwglx.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_Zp5NmaVM_Ps9CsX0YlkMYg_0yEXybPk";
+
+var supabase = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+// ===== GLOBAL ELEMENTS =====
+
 
 const setupScreen = document.getElementById("setupScreen");
 const appScreen = document.getElementById("appScreen");
-const startBtn = document.querySelector("#startBtn");
-
+const startBtn = document.getElementById("startBtn");
 
 const yourNameInput = document.getElementById("yourName");
 const crushNameInput = document.getElementById("crushName");
 const moodSelect = document.getElementById("moodSelect");
+const anonymousCheckbox = document.getElementById("anonymous");
 
 const question = document.getElementById("question");
 const character = document.getElementById("character");
@@ -26,74 +35,41 @@ const linkStatus = document.getElementById("linkStatus");
 
 const bg = document.querySelector(".bg-overlay");
 const heartLayer = document.querySelector(".heart-layer");
+
 const sound = document.getElementById("valSound");
+const soundToggle = document.getElementById("soundToggle");
+const themeToggle = document.getElementById("themeToggle");
 
 // ===== STATE =====
 let yesScale = 1;
 let noScale = 1;
 let noCount = 0;
+let soundOn = true;
 
-
-yourName = "Someone";
-
-
-const themeToggle = document.getElementById("themeToggle");
-
-themeToggle.onclick = ()=>{
+// ===== THEME =====
+themeToggle.onclick = () => {
   document.body.classList.toggle("dark");
 };
 
-
-const soundToggle = document.getElementById("soundToggle");
-
-let soundOn = true;
-
-soundToggle.addEventListener("click", ()=>{
+// ===== SOUND =====
+soundToggle.onclick = () => {
   soundOn = !soundOn;
+  soundToggle.textContent = soundOn ? "🔊" : "🔇";
+  sound.volume = soundOn ? 0.6 : 0;
+};
 
-  if(soundOn){
-    soundToggle.textContent = "🔊";
-    sound.volume = 0.6;
-  }else{
-    soundToggle.textContent = "🔇";
-    sound.volume = 0;
-  }
-});
-
-// ===== MOOD ENGINE =====
+// ===== MOODS =====
 const moods = {
-  cute: {
-    emoji: "😏",
-    yesText: "Yayyy 😍💖",
-    final: "You're my Valentine 💘",
-  },
-  romantic: {
-    emoji: "😍",
-    yesText: "My love 😘💖",
-    final: "Forever my Valentine 💍💘",
-  },
-  funny: {
-    emoji: "😂",
-    yesText: "E choke 😂💖",
-    final: "Valentine confirmed 🤣💘",
-  },
-  dramatic: {
-    emoji: "😭",
-    yesText: "At last 🕺💃🕺💖",
-    final: "My Destinied Valentine 😂💘",
-  }
+  cute: { emoji: "🙈", yesText: "Yayyy 😍💖", final: "You're my Valentine 💘" },
+  romantic: { emoji: "😍", yesText: "My love 😘💖", final: "Forever my Valentine 💍💘" },
+  funny: { emoji: "😂", yesText: "E choke 😂💖", final: "Valentine confirmed 🤣💘" },
+  dramatic: { emoji: "😭", yesText: "At last 🕺💃💖", final: "My Destinied Valentine 💘" }
 };
 
 const noTexts = [
-  "No 😳",
-  "Are you sure? 😢",
-  "Think again 🥺",
-  "Don't break my heart 💔",
-  "Last chance 😭",
-  "Stop this 😭",
-  "Just say yes 😭💘",
-  "You can't escape 😈💓",
-   "Don't do this 😭", 
+  "No 😳","Are you sure? 😢","Think again 🥺",
+  "Don't break my heart 💔","Last chance 😭",
+  "Just say yes 😭💘","You can't escape 😈💓", "Don't do this 😭", 
     "You're breaking my heart 💔",
     "Try again 🥺",
     "You joking right? 😭",
@@ -102,40 +78,82 @@ const noTexts = [
     "You're killing me 😭",
 ];
 
+function getCodeFromURL() {
+  const path = window.location.pathname;
+  const parts = path.split("/");
+
+  if (parts[1] === "v" && parts[2]) {
+    return parts[2];
+  }
+
+  return null;
+}
+async function loadProposal(code) {
+
+  const { data, error } = await supabase
+    .from("proposals")
+    .select("*")
+    .eq("code", code)
+    .single();
+
+  if (error || !data) {
+    alert("Proposal not found 💔");
+    return;
+  }
+
+  initApp({
+    yourName: data.sender_name,
+    crushName: data.crush_name,
+    mood: data.mood
+  });
+}
+
+
 // ===== UTILITIES =====
-function createHeart(x,y){
+function createHeart(x, y) {
   const h = document.createElement("div");
   h.className = "heart";
   h.innerText = "💖";
   h.style.left = x + "px";
   h.style.top = y + "px";
   heartLayer.appendChild(h);
-  setTimeout(()=>h.remove(),2000);
+  setTimeout(() => h.remove(), 2000);
 }
 
-function rainHearts(){
+// Hearts fall from TOP 👇
+function rainHearts() {
   const h = document.createElement("div");
   h.className = "heart";
-  h.innerText = "💖💓💗";
-  h.style.left = Math.random()*window.innerWidth + "px";
-  h.style.top = window.innerHeight + "px";
+  h.innerText = "💘";
+  h.style.left = Math.random() * window.innerWidth + "px";
+  h.style.top = "-40px";
   heartLayer.appendChild(h);
-  setTimeout(()=>h.remove(),3000);
+  setTimeout(() => h.remove(), 4000);
 }
 
-// ===== URL ENGINE =====
-function buildURL(data){
+// Typing effect ✍️
+function typeText(el, text, speed = 35) {
+  el.textContent = "";
+  let i = 0;
+  const t = setInterval(() => {
+    el.textContent += text[i];
+    i++;
+    if (i >= text.length) clearInterval(t);
+  }, speed);
+}
+
+// ===== URL =====
+function buildURL(data) {
   const params = new URLSearchParams(data).toString();
   return `${window.location.origin}/?${params}`;
 }
-function buildShareURL(data){
+
+function buildShareURL(data) {
   const params = new URLSearchParams(data).toString();
   return `https://be-my-valentine-app891.vercel.app/?${params}`;
 }
 
-
-
-function readURL(){
+function readURL() {
   const params = new URLSearchParams(window.location.search);
   return {
     yourName: params.get("yourName"),
@@ -144,66 +162,73 @@ function readURL(){
   };
 }
 
-// ===== SETUP FLOW =====
-startBtn.addEventListener("click", ()=>{
-  const yourName = yourNameInput.value.trim();
+// ===== INIT =====
+function initApp(data) {
+  setupScreen.classList.add("hidden");
+  appScreen.classList.remove("hidden");
+
+  const moodData = moods[data.mood];
+  character.innerText = moodData.emoji;
+
+  typeText(
+    question,
+    `${data.yourName} is asking 💘\n Will you be my Valentine, ${data.crushName}? 🌹`
+  );
+}
+
+// ===== START =====
+startBtn.onclick = async () => {
+
+  let yourName = yourNameInput.value.trim();
   const crushName = crushNameInput.value.trim();
   const mood = moodSelect.value;
+  const anonymous = anonymousCheckbox.checked;
 
-  if(!yourName || !crushName){
-    alert("Please fill both names 💖");
+  if (!yourName || !crushName) {
+    alert("Fill both names 💖");
     return;
   }
 
-  const url = buildURL({ yourName, crushName, mood });
-  window.history.pushState({}, "", url);
+  if (anonymous) yourName = "Someone";
 
-  initApp({ yourName, crushName, mood });
-});
+  // Generate short code
+  const code = Math.random().toString(36).substring(2, 8);
 
-// ===== INIT ENGINE =====
-function initApp(data){
-  setupScreen.classList.add("hidden");
-  appScreen.classList.remove("hidden");
-  
+  // Save to database
+  await supabase.from("proposals").insert({
+    code,
+    sender_name: yourName,
+    crush_name: crushName,
+    mood,
+    anonymous,
+    accepted: false
+  });
 
+  // Redirect to share page
+  window.location.href = `/v/${code}`;
+};
 
-  const moodData = moods[data.mood];
-
-  character.innerText = moodData.emoji;
- question.innerHTML =
-`<strong>${data.yourName}</strong> is Asking🥺:<br>
-Will you be my Valentine, <span>${data.crushName}</span>? 😍🌹`;
-
-}
-
-// ===== BUTTON LOGIC =====
-noBtn.addEventListener("click", ()=>{
+// ===== NO BUTTON =====
+noBtn.onclick = () => {
   noCount++;
-  noBtn.innerText = noTexts[Math.min(noCount, noTexts.length-1)];
+  noBtn.innerText = noTexts[Math.min(noCount, noTexts.length - 1)];
 
   yesScale += 0.25;
   yesBtn.style.transform = `scale(${yesScale})`;
   yesBtn.classList.add("glow");
 
-  noScale -= 0.05;
-  if(noScale < 0.85) noScale = 0.85;
+  noScale = Math.max(0.85, noScale - 0.05);
   noBtn.style.transform = `scale(${noScale})`;
-
-  // FORCE overlay dominance
-  yesBtn.style.zIndex = 10;
-  noBtn.style.zIndex = 1;
 
   bg.style.opacity = Math.min(1, yesScale / 2);
 
   const rect = yesBtn.getBoundingClientRect();
-  createHeart(rect.left + rect.width/2, rect.top);
-});
+  createHeart(rect.left + rect.width / 2, rect.top);
+};
 
-
-
-yesBtn.addEventListener("click", ()=>{
-  if(sound){ sound.currentTime = 0; sound.play().catch(()=>{}); }
+// ===== YES BUTTON =====
+yesBtn.onclick = () => {
+  if (soundOn) sound.play().catch(() => {});
 
   buttons.innerHTML = "";
 
@@ -215,71 +240,65 @@ yesBtn.addEventListener("click", ()=>{
   bg.style.opacity = 1;
 
   const rain = setInterval(rainHearts, 120);
+  setTimeout(() => clearInterval(rain), 12000);
 
-  setTimeout(()=>clearInterval(rain), 12000);
-
-  // Share
- const shareURL = buildShareURL(readURL());
+  const shareURL = buildShareURL(params);
   shareLinkInput.value = shareURL;
   shareBox.classList.remove("hidden");
-});
 
-// ===== SHARE ENGINE =====
-shareBtn.addEventListener("click", async ()=>{
-  const data = {
-    title: "Be My Valentine 💘",
-    text: "Someone is asking you to be their Valentine 😍💖",
-    url: window.location.href
-  };
-
-  if(navigator.share){
-    try{ await navigator.share(data); }catch(e){}
-  }else{
-    window.open(`https://wa.me/?text=${encodeURIComponent(data.text + "\n" + data.url)}`);
-  }
-
-  
-
-const themeToggle = document.getElementById("themeToggle");
-
-themeToggle.onclick = ()=>{
-  document.body.classList.toggle("dark");
+  // Save acceptance (for persistence)
+  localStorage.setItem("valAccepted", "true");
 };
 
+// ===== SHARE =====
+shareBtn.onclick = async () => {
+  const data = {
+    title: "💘 Someone has a question for you",
+    text: "Tap this 💖",
+    url: shareLinkInput.value
+  };
 
-});
+  if (navigator.share) {
+    try { await navigator.share(data); } catch {}
+  } else {
+    window.open(`https://wa.me/?text=${encodeURIComponent(data.text + "\n" + data.url)}`);
+  }
+};
 
-function typeText(el, text, speed=35){
-  el.textContent = "";
-  let i=0;
-
-  const t = setInterval(()=>{
-    el.textContent += text[i];
-    i++;
-    if(i >= text.length) clearInterval(t);
-  },speed);
-}
-typeText(
-  question,
-  `${data.yourName} asks: Will you be my Valentine, ${data.crushName}? 🌹`
-);
-
-
-copyLinkBtn.addEventListener("click", async ()=>{
-  try{
-    await navigator.clipboard.writeText(window.location.href);
-    linkStatus.innerText = "💘 Link copied! Send to your crush 😏";
-  }catch(e){
+// ===== COPY =====
+copyLinkBtn.onclick = async () => {
+  try {
+    await navigator.clipboard.writeText(shareLinkInput.value);
+    linkStatus.innerText = "💘 Link copied!";
+  } catch {
     linkStatus.innerText = "❌ Couldn't copy link";
   }
-});
+};
 
-// ===== AUTO INIT FROM URL =====
-(function(){
+// ===== AUTO LOAD =====
+(function () {
   const data = readURL();
-  if(data.yourName && data.crushName && data.mood){
-    initApp(data);
+
+  // ===== AUTO LOAD FROM LINK =====
+// ===== AUTO LOAD FROM LINK OR NORMAL MODE =====
+(async function () {
+
+  const code = getCodeFromURL();
+
+  if (code) {
+    await loadProposal(code);
+    return;
   }
+
+  // 👉 No link → show setup screen normally
+  setupScreen.classList.remove("hidden");
+
 })();
 
-});
+
+
+  // Restore celebration if refreshed
+  if (localStorage.getItem("valAccepted")) {
+    bg.style.opacity = 1;
+  }
+})();

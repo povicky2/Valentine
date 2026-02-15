@@ -5,17 +5,20 @@
     <title>Be My Valentine 💘</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta http-equiv="Content-Security-Policy"
+      content="default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval'">
+
 
     <!-- SEO -->
     <meta name="description" content="Send a beautiful interactive Valentine request to your crush 💖">
     <meta property="og:title" content="Be My Valentine 💘">
     <meta property="og:description" content="Someone is asking you to be their Valentine 😍">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://be-my-valentine-app891.vercel.app/">
+    <meta property="og:url" content="https://be-my-valentine-app891.vercel.app/?yourName&crushName&mood">
 
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
-
+    
 </head>
 
 <body>
@@ -43,7 +46,7 @@
         <option value="funny">Funny 😂</option>
         <option value="dramatic">Dramatic 😭</option>
     </select>
-    <button id="themeToggle" class="icon-btn">🌙</button>
+    
 
     <button id="startBtn">Create Valentine 💌</button> 
    
@@ -79,6 +82,7 @@
     </div>
 
 </section>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script src="script.js"></script>
 </body>
