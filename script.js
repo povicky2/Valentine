@@ -302,3 +302,41 @@ copyLinkBtn.onclick = async () => {
     bg.style.opacity = 1;
   }
 })();
+
+document.addEventListener("DOMContentLoaded", async () => {
+
+  const path = window.location.pathname;
+  const parts = path.split("/");
+
+  // Check if URL is /v/ABC123
+  if (parts[1] === "v" && parts[2]) {
+
+    const code = parts[2];
+
+    const { data, error } = await supabase
+      .from("proposals")
+      .select("*")
+      .eq("code", code)
+      .single();
+
+    if (error || !data) {
+      alert("Proposal not found 💔");
+      return;
+    }
+
+    // Hide setup screen
+    document.getElementById("setupscreen")?.classList.add("hidden");
+
+    // Show app screen
+    document.getElementById("appscreen")?.classList.remove("hidden");
+
+    // Load proposal
+    initApp({
+      yourName: data.sender_name,
+      crushName: data.crush_name,
+      mood: data.mood
+    });
+  }
+
+});
+
